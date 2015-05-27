@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style></style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var width = 960,
+	height = 960,
+	margin = 5,
+	a = Math.PI/2,
+	i = 0,
+	x1 = width/2,
+	y1 = height/2,
+	x2,
+	y2,
+	add_angle = Math.PI/60;
+
+var svg = d3.select("body").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+var u_circle = svg.append("g")
+				.append("circle")
+				.attr("cx", width/2)
+				.attr("cy", height/2)
+				.attr("r", height/2 - 5)
+				.style("fill", "none")
+				.style("stroke", "gray")
+				.style("stroke-opacity", 0.7);
+
+var l_circle = svg.append("g")
+				.append("circle")
+				.attr("cx", width/2)
+				.attr("cy", height/2 - height/4 + 2.5)
+				.attr("r", (height/2 - 5)/2)
+				.style("fill", "none")
+				.style("stroke", "green")
+				.style("stroke-opacity", 0.7);
+
+var m_point = svg.append("g")
+				.append("circle")
+				.attr("cx", width/2 + height/2 -5)
+				.attr("cy", height/2)
+				.attr("r", 5)
+				.style("fill", "black");
+
+var l_line = svg.append("g")
+				.attr("class", "lion");
+
+function m_move() {
+	i+=add_angle;
+	m_point.transition()
+		.duration(50)
+		.attr("cx", (height/2 - 5)*Math.cos(i) + width/2)
+		.attr("cy", -(height/2 - 5)*Math.sin(i) + height/2)
+		.each("end", i<a ? function() {m_move(); l_path()} : function() {return;});
+}
+
+function l_path() {
+	x2 = m_point.attr("cx");
+	y2 = m_point.attr("cy");
+	rad_angle = Math.acos((x2-x1)/norm(x1, y1, x2, y2));
+	num_a = -(rad_angle*180/Math.PI);
+	u_length = add_angle*(height/2 - 5);
+	line_p = l_line.append("line")
+		.attr("x1", 0)
+		.attr("y1", 0)
+		.attr("x2", u_length)
+		.attr("y2", 0)
+		.attr("transform", "translate(" + x1 + "," + y1 + ")rotate(" + num_a + ")")
+		.style("stroke", "orange");
+
+	x1 = x1 + u_length*Math.cos(rad_angle);
+	y1 = y1 - u_length*Math.sin(rad_angle);
+}
+
+function norm(x1, y1, x2, y2) {
+	return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+}
+
+m_move();
+
+</script>
+</body>
